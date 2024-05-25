@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "variations",
+  "info": {
+    "singularName": "variation",
+    "pluralName": "variations",
+    "displayName": "Variations",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "variation_category": {
+      "type": "string"
+    },
+    "variation_value": {
+      "type": "string"
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "cart_items": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::cart-item.cart-item",
+      "mappedBy": "variations"
+    }
+  }
+}
