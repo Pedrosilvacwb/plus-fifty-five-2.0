@@ -1,13 +1,14 @@
-'use client';
-import { Product } from '@/types';
-import { Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import ProductCard from './ProductCard';
+"use client";
+import { Product, User } from "@/types";
+import { Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import ProductCard from "./ProductCard/ProductCard";
 
 interface ProductsCarosselProps {
   products: Product[];
+  user: User;
 }
-const ProductsCarossel = ({ products }: ProductsCarosselProps) => {
+const ProductsCarossel = ({ products, user }: ProductsCarosselProps) => {
   return (
     <Swiper
       slidesPerView={3}
@@ -17,13 +18,17 @@ const ProductsCarossel = ({ products }: ProductsCarosselProps) => {
       }}
       modules={[Pagination]}
     >
-      {products?.map(({ attributes, id }) => (
-        <SwiperSlide key={id}>
+      {products?.map((product: Product) => (
+        <SwiperSlide key={product?.id}>
           <ProductCard
-            name={attributes.name}
-            picture={attributes?.image?.data?.attributes?.url}
-            price={attributes.price}
+            user={user}
+            productId={product?.id}
+            name={product?.attributes?.name}
+            picture={product?.attributes?.image?.data?.attributes?.url}
+            price={product?.attributes?.price}
             rate={4.8}
+            sizes={product?.attributes?.sizes}
+            variations={product?.attributes?.variations}
           />
         </SwiperSlide>
       ))}
