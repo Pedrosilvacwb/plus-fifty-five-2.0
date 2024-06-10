@@ -590,6 +590,53 @@ export interface PluginContentReleasesReleaseAction
   };
 }
 
+export interface PluginI18NLocale extends Schema.CollectionType {
+  collectionName: 'i18n_locale';
+  info: {
+    singularName: 'locale';
+    pluralName: 'locales';
+    collectionName: 'locales';
+    displayName: 'Locale';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    name: Attribute.String &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+          max: 50;
+        },
+        number
+      >;
+    code: Attribute.String & Attribute.Unique;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUsersPermissionsPermission
   extends Schema.CollectionType {
   collectionName: 'up_permissions';
@@ -695,7 +742,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     username: Attribute.String &
@@ -741,65 +787,19 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface PluginI18NLocale extends Schema.CollectionType {
-  collectionName: 'i18n_locale';
-  info: {
-    singularName: 'locale';
-    pluralName: 'locales';
-    collectionName: 'locales';
-    displayName: 'Locale';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    name: Attribute.String &
-      Attribute.SetMinMax<
-        {
-          min: 1;
-          max: 50;
-        },
-        number
-      >;
-    code: Attribute.String & Attribute.Unique;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'plugin::i18n.locale',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'plugin::i18n.locale',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiCartCart extends Schema.CollectionType {
   collectionName: 'carts';
   info: {
     singularName: 'cart';
     pluralName: 'carts';
     displayName: 'Cart';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    cartId: Attribute.String;
+    cartId: Attribute.String & Attribute.Unique;
     cart_items: Attribute.Relation<
       'api::cart.cart',
       'oneToMany',
@@ -832,9 +832,9 @@ export interface ApiCartItemCartItem extends Schema.CollectionType {
       'oneToOne',
       'api::product.product'
     >;
-    variations: Attribute.Relation<
+    variation: Attribute.Relation<
       'api::cart-item.cart-item',
-      'manyToMany',
+      'oneToOne',
       'api::variation.variation'
     >;
     cart: Attribute.Relation<
@@ -844,10 +844,10 @@ export interface ApiCartItemCartItem extends Schema.CollectionType {
     >;
     quantity: Attribute.Integer;
     isActive: Attribute.Boolean;
-    user: Attribute.Relation<
+    user_id: Attribute.Relation<
       'api::cart-item.cart-item',
       'oneToOne',
-      'admin::user'
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -890,6 +890,11 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'oneToMany',
       'api::variation.variation'
     >;
+    sizes: Attribute.Relation<
+      'api::product.product',
+      'manyToMany',
+      'api::size.size'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -904,6 +909,36 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'oneToOne',
       'admin::user'
     > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiSizeSize extends Schema.CollectionType {
+  collectionName: 'sizes';
+  info: {
+    singularName: 'size';
+    pluralName: 'sizes';
+    displayName: 'Size';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    value: Attribute.String;
+    isActive: Attribute.Boolean;
+    products: Attribute.Relation<
+      'api::size.size',
+      'manyToMany',
+      'api::product.product'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::size.size', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::size.size', 'oneToOne', 'admin::user'> &
       Attribute.Private;
   };
 }
@@ -923,11 +958,6 @@ export interface ApiVariationVariation extends Schema.CollectionType {
     variation_category: Attribute.String;
     variation_value: Attribute.String;
     isActive: Attribute.Boolean;
-    cart_items: Attribute.Relation<
-      'api::variation.variation',
-      'manyToMany',
-      'api::cart-item.cart-item'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -960,13 +990,14 @@ declare module '@strapi/types' {
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
+      'plugin::i18n.locale': PluginI18NLocale;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'plugin::i18n.locale': PluginI18NLocale;
       'api::cart.cart': ApiCartCart;
       'api::cart-item.cart-item': ApiCartItemCartItem;
       'api::product.product': ApiProductProduct;
+      'api::size.size': ApiSizeSize;
       'api::variation.variation': ApiVariationVariation;
     }
   }

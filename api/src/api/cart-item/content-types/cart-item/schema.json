@@ -17,11 +17,10 @@
       "relation": "oneToOne",
       "target": "api::product.product"
     },
-    "variations": {
+    "variation": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::variation.variation",
-      "inversedBy": "cart_items"
+      "relation": "oneToOne",
+      "target": "api::variation.variation"
     },
     "cart": {
       "type": "relation",
@@ -35,10 +34,10 @@
     "isActive": {
       "type": "boolean"
     },
-    "user": {
+    "user_id": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "admin::user"
+      "target": "plugin::users-permissions.user"
     }
   }
 }

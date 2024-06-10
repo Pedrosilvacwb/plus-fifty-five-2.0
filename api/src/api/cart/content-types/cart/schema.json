@@ -4,7 +4,8 @@
   "info": {
     "singularName": "cart",
     "pluralName": "carts",
-    "displayName": "Cart"
+    "displayName": "Cart",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -12,7 +13,8 @@
   "pluginOptions": {},
   "attributes": {
     "cartId": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "cart_items": {
       "type": "relation",

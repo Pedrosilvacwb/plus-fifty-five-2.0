@@ -20,12 +20,6 @@
     },
     "isActive": {
       "type": "boolean"
-    },
-    "cart_items": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::cart-item.cart-item",
-      "mappedBy": "variations"
     }
   }
 }

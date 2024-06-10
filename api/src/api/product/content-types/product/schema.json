@@ -42,6 +42,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::variation.variation"
+    },
+    "sizes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::size.size",
+      "inversedBy": "products"
     }
   }
 }
